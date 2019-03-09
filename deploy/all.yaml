@@ -24,25 +24,14 @@ spec:
         - containerPort: 5000
           protocol: TCP
 ---
-  apiVersion: extensions/v1beta1
-  kind: Ingress
-  metadata:
-    labels:
-      deploy: test1
-    name: demochat-ingress
-  spec:
-    backend:
-      serviceName: demochat
-      servicePort: 80
----
   apiVersion: v1
   kind: Service
   metadata:
     labels:
-      deploy: test1
+      app: demochat
     name: demochat
   spec:
-    type: NodePort
+    type: LoadBalancer
     selector:
       app: demochat
     ports:
@@ -60,7 +49,7 @@ metadata:
     app: mongo
   name: mongo
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
   - name: "http"
     port: 27017
@@ -70,19 +59,8 @@ spec:
     service: mongo
 ---
 apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  name: mongo
-spec:
-  backend:
-    serviceName: mongo
-    servicePort: 27017
----
-apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  annotations:
-    io.codefresh.owner: codefresh
   name: mongo
 spec:
   replicas: 1
