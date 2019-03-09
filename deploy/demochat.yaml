@@ -1,22 +1,25 @@
-# Deploy Demo Chat Application
+
+# Deploys Demochat and Mongo DB to Kubernetes
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: demochat
+  name: demo-chat
   labels:
-    service: demochat
-    app: demochat
+    deploy: test1
+    service: demo-chat
+    app: demo-chat
 spec:
   replicas: 2
   template:
     metadata:
       labels:
-        service: demochat
+        deploy: test1
+        service: demo-chat
     spec:
       imagePullSecrets:
-        - name: {{ImagePullSecret}}
+        - name: cfcr
       containers:
-      # Update to Pull from ACR
+      # Need to Update for ACR
       - image: demochat:latest
         name: app
         imagePullPolicy: Always
@@ -32,7 +35,7 @@ spec:
     name: demochat-ingress
   spec:
     backend:
-      serviceName: demochat
+      serviceName: demochat-board
       servicePort: 80
 ---
   apiVersion: v1
@@ -40,18 +43,18 @@ spec:
   metadata:
     labels:
       deploy: test1
-    name: demochat
+    name: demochat-master
   spec:
     type: NodePort
     selector:
-      app: demochat
+      app: demo-chat
     ports:
     - name: "http"
       port: 80
       protocol: TCP
       targetPort: 5000
     selector:
-      service: demochat
+      service: demochat-board
 ---
 apiVersion: v1
 kind: Service
