@@ -17,7 +17,7 @@ spec:
         - name: {{ImagePullSecret}}
       containers:
       # Update to Pull from ACR
-      - image: demochat:latest
+      - image: r.cfcr.io/{{CF_ACCOUNT}}/demochat:latest
         name: app
         imagePullPolicy: Always
         ports:
