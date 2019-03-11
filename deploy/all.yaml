@@ -14,9 +14,8 @@ spec:
         service: demochat
     spec:
       imagePullSecrets:
-        - name: {{ImagePullSecret}}
+        - name: codefresh-generated-r.cfcr.io-cfcr-default
       containers:
-      # Update to Pull from ACR
       - image: r.cfcr.io/{{CF_ACCOUNT}}/demochat:latest
         name: app
         imagePullPolicy: Always
