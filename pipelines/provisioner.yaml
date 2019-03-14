@@ -1,0 +1,72 @@
+version: '1.0'
+steps:
+
+# Manual Pre-Reqs
+# 
+# Create Shared Secret "aqua-creds"
+# Pipeline will pause to let you set this up if you'd like to create Aqua using same pipeline.
+# AQUA_USERNAME - Aqua Console Username
+# AQUA_PASSWORD - Aqua Console Password
+
+# Usage
+# Installs Pre-Reqs to support Kubernetes installations of Aqua and Demochat
+
+# Aqua (Optional)
+# Requires Aqua Registry User and Password
+# - creates an aqua namespace in your Kubernetes cluster
+# - creates an aqua registry pull secret in aqua namespace
+# - installs aqua all-in-one to aqua namespace
+# Add Pipeline Variables AQUA_REG_USERNAME and AQUA_REG_PASSWORD with respective values to pipeline's Environment Variables
+# Uncomment lines beginning with #(AQUA) removing "#(AQUA)"
+
+
+# Creates Docker Registries in Codefresh 
+#(AQUA)   CreateRegistry:
+#(AQUA)     image: codefresh/cli:latest
+#(AQUA)     commands:
+#(AQUA)       - codefresh create registry standard aqua --username ${{AQUA_REG_USERNAME}} --password ${{AQUA_REG_PASSWORD}} --domain registry.aquasec.com
+
+# Get Kubernetes cluster name
+# https://codefresh.io/docs/docs/codefresh-yaml/variables/#using-cf_export-command
+  GetKubernetesCluster:
+    image: codefresh/cli:latest
+    commands:
+      - cf_export CLUSTER="`codefresh get cluster -o json | jq '.name'`"
+  # Create Kubernetes namespace for Aqua
+  #(AQUA)  CreateAquaNamespace:
+  #(AQUA)    image: codefresh/cfstep-helm:latest
+  #(AQUA)    commands:
+  #(AQUA)      - kubectl config use-context ${{CLUSTER}}
+  #(AQUA)      - kubectl create namespace aqua
+
+  # Creates Kubernetes Image Pull Secrets
+  CreateImagePullSecrets:
+    image: codefresh/cli:latest
+    commands:
+      #(AQUA)- codefresh generate image-pull-secret --cluster "${{CLUSTER}}" --registry aqua --namespace aqua
+      - codefresh generate image-pull-secret --cluster "${{CLUSTER}}" --registry cfcr
+  
+  # Self-check for User
+  CheckForSecret:
+    type: pending-approval
+    title: Check for Secret
+    description: Have You Created Shared Secret "aqua-creds"?
+
+  # Clone Demochat Repository Contents
+  CloneDemochatRepository:
+    image: alpine/git:latest
+    commands:
+      - git clone https://github.com/salesdemocf/demochat.git
+  
+  # Creates Codefresh Pipelines
+  CreatePipelines:
+    image: codefresh/cfstep-pipeline-creator:latest
+    environment:
+      - CREATOR_FILE_PATH='demochat/pipelines/codefresh-creator.yaml'
+
+# Reference Docs
+# Codefresh Variables: https://codefresh.io/docs/docs/codefresh-yaml/variables/
+# Codefresh CLI: https://codefresh-io.github.io/cli/
+# Codefresh Approvals: https://codefresh.io/docs/docs/codefresh-yaml/steps/approval/
+# Codefresh Shared Configurations: https://codefresh.io/docs/docs/configure-ci-cd-pipeline/shared-configuration
+

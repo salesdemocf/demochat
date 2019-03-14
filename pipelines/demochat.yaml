@@ -1,0 +1,81 @@
+version: '1.0'
+stages:
+  - build
+  - test
+  - archive
+  - deploy
+steps:
+  BuildingDockerImage:
+    title: Building Docker Image
+    type: build
+    stage: build
+    image_name: demochat
+    working_directory: ./
+    tag: latest
+    dockerfile: Dockerfile
+  RunningTests:
+    type: parallel
+    steps:
+      RunningUnitTests:
+        title: Running Unit Tests
+        stage: test
+        type: composition
+        composition:
+          version: '2'
+          services:
+            mongo:
+              image: mongo:latest
+              ports:
+                - 27017
+        composition_candidates:
+          test:
+            image: ${{BuildingDockerImage}}
+            command: npm test
+        on_success:
+          metadata:
+            set:
+              - ${{BuildingDockerImage.imageId}}:
+                  - CF_QUALITY: true
+        on_fail:
+          metadata:
+            set:
+              - ${{BuildingDockerImage.imageId}}:
+                  - CF_QUALITY: false
+      RunningAquaScanImage:
+      # TODO Replace with Aqua Scan Step
+        title: Running Aqua Scan
+        stage: test
+        image: alpine
+        commands: 
+          - apk add curl
+          - curl -u administrator:${{AQUA_PASSWORD}} -X POST http://${{AQUA_HOST}}/api/v1/scanner/registry/Codefresh/image/${{CF_ACCOUNT}}%2Fdemochat:latest/scan
+        on_success:
+          metadata:
+            set:
+              - ${{BuildingDockerImage.imageId}}:
+                  - AQUA_SCAN: http://${{AQUA_HOST}}/#!/app/images/Codefresh/${{CF_ACCOUNT}}~2Fdemochat/latest
+        on_fail:
+          metadata:
+            set:
+              - ${{BuildingDockerImage.imageId}}:
+                  - AQUA_SCAN: false
+  PushingToDockerRegistry:
+    title: Pushing to Azure Container Registry
+    type: push
+    stage: archive
+    candidate: ${{BuildingDockerImage}}
+    tag: latest
+    registry: cfcr
+  CopyingDeployFile:
+    title: Copying Deploy File
+    image: alpine
+    stage: deploy
+    commands:
+      - apk add curl
+      - curl -O https://raw.githubusercontent.com/salesdemocf/demochat/master/deploy/all.yaml
+  RunningDeployScript:
+    title: Running Deploy Script
+    type: deploy
+    stage: deploy
+    kind: kubernetes
+    cluster: 'cfdemo030819@CloudLabs M12VC - 008'
