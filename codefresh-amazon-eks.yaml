@@ -19,7 +19,7 @@ steps:
   build:
     title: "Building Docker image"
     type: "build"
-    image_name: "sales-dev/demochat"
+    image_name: "salesdemocf/demochat"
     working_directory: "${{clone}}"
     tag: "${{CF_BRANCH_TAG_NORMALIZED}}"
     dockerfile: "Dockerfile"
