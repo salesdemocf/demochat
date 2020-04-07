@@ -11,7 +11,7 @@ steps:
   clone:
     title: "Cloning repository"
     type: "git-clone"
-    repo: "cfsalesdemo/demochat"
+    repo: "salesdemocf/demochat"
     revision: "${{CF_BRANCH}}"
     git: "github"
     stage: "clone"
@@ -19,7 +19,7 @@ steps:
   build:
     title: "Building Docker image"
     type: "build"
-    image_name: "salesdemocf/demochat"
+    image_name: "sales-dev/demochat"
     working_directory: "${{clone}}"
     tag: "${{CF_BRANCH_TAG_NORMALIZED}}"
     dockerfile: "Dockerfile"
