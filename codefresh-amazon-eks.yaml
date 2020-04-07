@@ -54,7 +54,7 @@ steps:
     type: "push"
     candidate: "${{build}}"
     tag: "${{CF_BRANCH_TAG_NORMALIZED}}"
-    image_name: "336151728602.dkr.ecr.us-west-2.amazonaws.com/demochat"
+    image_name: "demochat"
     registry: "ecr"
     stage: "push"
 
