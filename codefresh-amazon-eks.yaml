@@ -74,7 +74,7 @@ steps:
     type: "helm"
     arguments:
       helm_version: "3.1.1"
-      chart_name: "demochat"
+      chart_name: "${{CF_VOLUME_PATH}}/${{CF_REPO_NAME}}/helm/demochat"
       release_name: "demochat"
       kube_context: "sales-dev-eks"
       namespace: "default"
