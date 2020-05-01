@@ -66,6 +66,7 @@ steps:
       action: "push"
       kube_context: "sales-dev-eks"
       chart_name: "${{CF_VOLUME_PATH}}/${{CF_REPO_NAME}}/helm/demochat"
+      cmd_ps: "--force"
     stage: "package"
 
   deploy:
