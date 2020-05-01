@@ -50,7 +50,7 @@ steps:
     stage: "test"
 
   push:
-    title: "Pushing Docker image to ACR"
+    title: "Pushing Docker image to ECR"
     type: "push"
     candidate: "${{build}}"
     tag: "${{CF_BRANCH_TAG_NORMALIZED}}"
@@ -59,20 +59,20 @@ steps:
     stage: "push"
 
   package:
-    title: "Packing/Pushing Helm Chart to ACR"
+    title: "Packing/Pushing Helm Chart to ECR"
     type: "helm"
     arguments:
-      helm_version: "3.0.3"
+      helm_version: "3.1.1"
       action: "push"
       kube_context: "sales-dev-eks"
       chart_name: "${{CF_VOLUME_PATH}}/${{CF_REPO_NAME}}/helm/demochat"
     stage: "package"
 
   deploy:
-    title: "Deploying Helm chart to AKS"
+    title: "Deploying Helm chart to EKS"
     type: "helm"
     arguments:
-      helm_version: "3.0.3"
+      helm_version: "3.1.1"
       chart_name: "demochat"
       release_name: "demochat"
       kube_context: "sales-dev-eks"
