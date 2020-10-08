@@ -12,7 +12,7 @@ steps:
     title: "Cloning repository"
     type: "git-clone"
     repo: "salesdemocf/demochat"
-    revision: "${{CF_BRANCH}}"
+    revision: "add-amazon-yaml"
     git: "github"
     stage: "clone"
 
