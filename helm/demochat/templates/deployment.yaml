@@ -13,6 +13,9 @@ spec:
         app: {{.Release.Name}}
         release: {{.Release.Name}}
         heritage: Tiller
+  selector:
+    matchLabels:
+      app: {{.Release.Name}}
     spec:
       {{- if .Values.imagePullSecret }}
       imagePullSecrets:
