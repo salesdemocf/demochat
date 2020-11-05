@@ -1,5 +1,5 @@
 dependencies:
-- name: mongo
-  version: "0.2.0"
-  repository: "https://razielt77.github.com/helm"
+- name: mongodb
+  version: "9.3.1"
+  repository: "https://charts.bitnami.com/bitnami"
 
